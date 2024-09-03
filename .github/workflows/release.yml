@@ -1,0 +1,27 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag-generation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-go@v5.0.2
+        with:
+          go-version: 1.22
+
+      - name: Run semantic release
+        id: semantic_release
+      - uses: go-semantic-release/action@v1.23.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Save workflow summary
+      - name: Save summary
+        run: |
+          echo "Version: ${{ steps.semantic_release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
